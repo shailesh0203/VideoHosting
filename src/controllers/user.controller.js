@@ -1,4 +1,5 @@
 import { AsyncHandler } from "../utils/AsyncHandler.js";
+import mongoose from "mongoose";
 import {ApiError} from "../utils/ApiError.js"
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
@@ -125,8 +126,8 @@ const logoutUser=AsyncHandler(async(req,res)=>{
 await User.findByIdAndUpdate(
     req.user._id,
     {
-        $set:{
-            refreshToken:undefined
+        $unset:{
+            refreshToken:1
         }
     },
     {
@@ -313,7 +314,7 @@ const getUserChannelProfile=AsyncHandler(async(req,res)=>{
                     $size:"$subscribers"
                 },
                 channelSubscribedToCount:{
-                   $size:"subscribedTo"
+                   $size:"$subscribedTo"
                 },
                   isSubscribed:{
                     $cond:{
@@ -328,7 +329,7 @@ const getUserChannelProfile=AsyncHandler(async(req,res)=>{
         {
             $project:{
                 fullName:1,
-                userName:1,
+                username:1,
                 subscribersCount:1,
                 channelSubscribedToCount:1,
                 isSubscribed:1,
